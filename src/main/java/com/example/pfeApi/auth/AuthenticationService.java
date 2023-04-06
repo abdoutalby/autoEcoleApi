@@ -1,20 +1,23 @@
 package com.example.pfeApi.auth;
 
-import com.alibou.security.config.JwtService;
-import com.alibou.security.token.Token;
-import com.alibou.security.token.TokenRepository;
-import com.alibou.security.token.TokenType;
-import com.alibou.security.user.Role;
-import com.alibou.security.user.User;
-import com.alibou.security.user.UserRepository;
+import com.example.pfeApi.config.JwtService;
+import com.example.pfeApi.token.Token;
+import com.example.pfeApi.token.TokenRepository;
+import com.example.pfeApi.token.TokenType;
+import com.example.pfeApi.user.Role;
+import com.example.pfeApi.user.User;
+import com.example.pfeApi.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationService {
   private final UserRepository repository;
   private final TokenRepository tokenRepository;
@@ -28,6 +31,7 @@ public class AuthenticationService {
         .lastname(request.getLastname())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
+            .enabled(request.getEnabled() ? true : false)
         .role(Role.USER)
         .build();
     var savedUser = repository.save(user);
@@ -40,20 +44,21 @@ public class AuthenticationService {
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
     authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            request.getEmail(),
-            request.getPassword()
-        )
+            new UsernamePasswordAuthenticationToken(
+                    request.getEmail(),
+                    request.getPassword()
+            )
     );
     var user = repository.findByEmail(request.getEmail())
-        .orElseThrow();
+            .orElseThrow();
     var jwtToken = jwtService.generateToken(user);
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
     return AuthenticationResponse.builder()
-        .token(jwtToken)
-        .build();
+            .token(jwtToken)
+            .build();
   }
+
 
   private void saveUserToken(User user, String jwtToken) {
     var token = Token.builder()

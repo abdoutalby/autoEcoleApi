@@ -1,13 +1,10 @@
 package com.example.pfeApi.user;
 
+import com.example.pfeApi.ecole.Ecole;
 import com.example.pfeApi.token.Token;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
 import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -33,6 +30,11 @@ public class User implements UserDetails {
   private String lastname;
   private String email;
   private String password;
+  private Boolean enabled=false;
+
+  @ManyToOne
+  @JsonIgnore
+  private Ecole ecole;
 
   @Enumerated(EnumType.STRING)
   private Role role;
@@ -72,6 +74,6 @@ public class User implements UserDetails {
 
   @Override
   public boolean isEnabled() {
-    return true;
+    return this.enabled;
   }
 }
