@@ -16,11 +16,29 @@ public class EcoleController {
         return ecoleService.getAll();
     }
 
+    @GetMapping("/getById/{id}")
+    public ResponseEntity<?> getById(@PathVariable("id")Long  id)
+    {
+        return ecoleService.getById(id);
+    }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id")Long id){
+        return  this.ecoleService.delete(id);
+    }
+
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody Ecole ecole){
+    public ResponseEntity<?> save(@RequestBody EcoleDto ecole){
         return ecoleService.save(ecole);
     }
 
+    @PostMapping("/addClient/{id}/{idClient}")
+    public ResponseEntity<?> addClient(@PathVariable("id") Long id , @PathVariable("idClient")Integer idClient){
+        return this.ecoleService.addClient(id,idClient);
+    }
+    @PostMapping("/removeClient/{id}/{idClient}")
+    public ResponseEntity<?> removeClient(@PathVariable("id") Long id , @PathVariable("idClient")Integer idClient){
+        return this.ecoleService.removeClient(id,idClient);
+    }
     @GetMapping("/getAllClients/{id}")
     public ResponseEntity<?> getAllClients(@PathVariable("id") Long id ){
         return ecoleService.getAllClients(id);

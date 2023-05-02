@@ -1,6 +1,7 @@
 package com.example.pfeApi.config;
 
 
+import com.example.pfeApi.ecole.EcoleRepository;
 import com.example.pfeApi.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 public class ApplicationConfig {
 
   private final UserRepository repository;
+  private final EcoleRepository ecoleRepository;
 
   @Bean
   public UserDetailsService userDetailsService() {

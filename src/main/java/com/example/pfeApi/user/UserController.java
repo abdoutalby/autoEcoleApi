@@ -21,6 +21,10 @@ public class UserController {
         return userService.changePassword(reqest.getId() , reqest.getPassword());
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getAll(){
+        return userService.getAll();
+    }
 
 
 }

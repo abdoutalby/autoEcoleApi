@@ -1,6 +1,8 @@
 package com.example.pfeApi.user;
 
+import com.example.pfeApi.utils.API;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,7 @@ public class UserServiceImp implements UserService{
             user.setEnabled(true);
         return ResponseEntity.ok(userRepository.save(user));
         }else {
-            return ResponseEntity.badRequest().body("Invalid username");
+            return API.getResponseEntity("Invalid username",HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -28,7 +30,12 @@ public class UserServiceImp implements UserService{
             user.setPassword(passwordEncoder.encode(newPassword));
             return ResponseEntity.ok(userRepository.save(user));
         }else {
-            return ResponseEntity.badRequest().body("user not found");
+            return API.getResponseEntity("user not found", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Override
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.ok(userRepository.findAll());
     }
 }

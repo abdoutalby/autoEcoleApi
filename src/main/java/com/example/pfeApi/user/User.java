@@ -31,6 +31,9 @@ public class User implements UserDetails {
   private String email;
   private String password;
   private Boolean enabled=false;
+  @OneToOne(mappedBy = "owner")
+  @JsonIgnore
+  private Ecole own;
 
   @ManyToOne
   @JsonIgnore
@@ -40,6 +43,7 @@ public class User implements UserDetails {
   private Role role;
 
   @OneToMany(mappedBy = "user")
+  @JsonIgnore
   private List<Token> tokens;
 
   @Override
