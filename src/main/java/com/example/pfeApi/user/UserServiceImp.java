@@ -22,6 +22,16 @@ public class UserServiceImp implements UserService{
             return API.getResponseEntity("Invalid username",HttpStatus.BAD_REQUEST);
         }
     }
+    @Override
+    public ResponseEntity<?> desable(Integer id) {
+        var user = userRepository.findById(id).orElse(null);
+        if (user != null) {
+            user.setEnabled(false);
+            return ResponseEntity.ok(userRepository.save(user));
+        }else {
+            return API.getResponseEntity("Invalid username",HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @Override
     public ResponseEntity<?> changePassword(Integer id, String newPassword) {

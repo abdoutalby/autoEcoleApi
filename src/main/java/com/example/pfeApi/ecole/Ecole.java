@@ -1,5 +1,6 @@
 package com.example.pfeApi.ecole;
 
+import com.example.pfeApi.payment.Payment;
 import com.example.pfeApi.user.User;
 import com.example.pfeApi.vehicule.Vehicule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,4 +33,7 @@ public class Ecole {
     @JsonIgnore
     private List<Vehicule> vehicules = new ArrayList<>();
 
+    @OneToMany
+    @JsonIgnore
+    private List<Payment> payments =  new ArrayList<>();
 }

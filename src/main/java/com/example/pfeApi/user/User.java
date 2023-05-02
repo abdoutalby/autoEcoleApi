@@ -1,6 +1,7 @@
 package com.example.pfeApi.user;
 
 import com.example.pfeApi.ecole.Ecole;
+import com.example.pfeApi.payment.Payment;
 import com.example.pfeApi.token.Token;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -28,6 +29,7 @@ public class User implements UserDetails {
   private Integer id;
   private String firstname;
   private String lastname;
+  @Column(unique = true)
   private String email;
   private String password;
   private Boolean enabled=false;
@@ -45,6 +47,10 @@ public class User implements UserDetails {
   @OneToMany(mappedBy = "user")
   @JsonIgnore
   private List<Token> tokens;
+
+  @OneToMany(mappedBy = "user")
+  @JsonIgnore
+  private List<Payment> payments;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

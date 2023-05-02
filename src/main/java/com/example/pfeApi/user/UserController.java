@@ -16,6 +16,11 @@ public class UserController {
         return userService.enable(id);
     }
 
+    @PutMapping("/disable/{id}")
+    public ResponseEntity<?> disable(@PathVariable("id") Integer id){
+        return userService.desable(id);
+    }
+
     @PutMapping("/changePassword/{id}")
     public ResponseEntity<?> changePassword( @RequestBody ChanngePasswordReqest reqest){
         return userService.changePassword(reqest.getId() , reqest.getPassword());
