@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PaymentRepository extends JpaRepository<Payment , Long> {
-    List<Payment> findByUser(User user);
+    List<Payment> findByClient(User user);
     List<Payment> findByEcole(Ecole ecole);
 }

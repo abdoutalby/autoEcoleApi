@@ -48,7 +48,7 @@ public class PaymentServiceImp implements PaymentService{
     public ResponseEntity<?> getAllByUser(Integer id) {
     Optional<User> user = userRepository.findById(id);
         if (user.isPresent()){
-            return ResponseEntity.ok(paymentRepository.findByUser(user.get()));
+            return ResponseEntity.ok(paymentRepository.findByClient(user.get()));
         }else{
             return API.getResponseEntity("no user match this call",HttpStatus.BAD_REQUEST);
         }

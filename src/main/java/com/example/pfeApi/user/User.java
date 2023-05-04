@@ -48,7 +48,7 @@ public class User implements UserDetails {
   @JsonIgnore
   private List<Token> tokens;
 
-  @OneToMany(mappedBy = "user")
+  @OneToMany(mappedBy = "client")
   @JsonIgnore
   private List<Payment> payments;
 
