@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://dpg-chbdurqk728tp9dop2s0-a.render.com:5432/api_vh87?createDatabaseIfNotExist=true
+    url: jdbc:postgresql://dpg-chbdurqk728tp9dop2s0-a.oregon-postgres.render.com:5432/api_vh87?createDatabaseIfNotExist=true
     driverClassName: org.postgresql.Driver
     password: i4vTcugE71oofKEwoAwedE4KrecCIzao
     username: root
