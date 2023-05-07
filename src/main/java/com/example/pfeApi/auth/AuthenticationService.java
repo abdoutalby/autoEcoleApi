@@ -9,6 +9,7 @@ import com.example.pfeApi.user.User;
 import com.example.pfeApi.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,21 +26,26 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
-  public AuthenticationResponse register(RegisterRequest request) {
-    var user = User.builder()
-        .firstname(request.getFirstname())
-        .lastname(request.getLastname())
-        .email(request.getEmail())
-        .password(passwordEncoder.encode(request.getPassword()))
-            .enabled(request.getEnabled() ? true : false)
-        .role(Role.USER)
-        .build();
-    var savedUser = repository.save(user);
-    var jwtToken = jwtService.generateToken(user);
-    saveUserToken(savedUser, jwtToken);
-    return AuthenticationResponse.builder()
-        .token(jwtToken)
-        .build();
+  public ResponseEntity<?> register(RegisterRequest request) {
+   if(!repository.existsByEmail(request.getEmail())){
+     var user = User.builder()
+             .firstname(request.getFirstname())
+             .lastname(request.getLastname())
+             .email(request.getEmail())
+             .password(passwordEncoder.encode(request.getPassword()))
+             .enabled(request.getEnabled() ? true : false)
+             .role(Role.USER)
+             .build();
+     var savedUser = repository.save(user);
+     var jwtToken = jwtService.generateToken(user);
+     saveUserToken(savedUser, jwtToken);
+     return ResponseEntity.ok().body( AuthenticationResponse.builder()
+             .token(jwtToken)
+             .build());
+   }else {
+     return ResponseEntity.badRequest().body("{\"message\":\" email already exists\"}");
+   }
+
   }
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
