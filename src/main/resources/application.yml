@@ -1,12 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://dpg-chbdurqk728tp9dop2s0-a.oregon-postgres.render.com:5432/api_vh87?createDatabaseIfNotExist=true
-    driverClassName: org.postgresql.Driver
-    password: i4vTcugE71oofKEwoAwedE4KrecCIzao
+    url: jdbc:mysql://mysqldb:3306/api?createDatabaseIfNotExist=true
+    driverClassName: com.mysql.cj.jdbc.Driver
+    password: Super@3abdou
     username: root
   jpa:
     hibernate.ddl-auto : update
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
 server:
   port : 8081
