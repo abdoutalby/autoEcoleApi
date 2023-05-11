@@ -16,4 +16,5 @@ public class RegisterRequest {
   private String password;
   private Boolean enabled;
   private Long ecoleId;
+  private String role ;
 }

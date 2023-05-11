@@ -7,8 +7,10 @@ import com.example.pfeApi.token.TokenType;
 import com.example.pfeApi.user.Role;
 import com.example.pfeApi.user.User;
 import com.example.pfeApi.user.UserRepository;
+import com.example.pfeApi.utils.API;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,14 +30,29 @@ public class AuthenticationService {
 
   public ResponseEntity<?> register(RegisterRequest request) {
    if(!repository.existsByEmail(request.getEmail())){
+
+
      var user = User.builder()
              .firstname(request.getFirstname())
              .lastname(request.getLastname())
              .email(request.getEmail())
              .password(passwordEncoder.encode(request.getPassword()))
              .enabled(request.getEnabled() ? true : false)
-             .role(Role.USER)
              .build();
+     switch (request.getRole()){
+       case "admin": {
+         user.setRole(Role.ADMIN) ;
+         break;
+       }
+       case "user": {
+         user.setRole( Role.USER); ;
+         break;
+       }
+       case "ecole": {
+         user.setRole(Role.ECOLE) ;
+         break;
+       }
+     }
      var savedUser = repository.save(user);
      var jwtToken = jwtService.generateToken(user);
      saveUserToken(savedUser, jwtToken);
@@ -43,7 +60,7 @@ public class AuthenticationService {
              .token(jwtToken)
              .build());
    }else {
-     return ResponseEntity.badRequest().body("{\"message\":\" email already exists\"}");
+     return API.getResponseEntity("email already exists", HttpStatus.BAD_REQUEST);
    }
 
   }
@@ -63,6 +80,7 @@ public class AuthenticationService {
     saveUserToken(user, jwtToken);
     return AuthenticationResponse.builder()
             .token(jwtToken)
+            .role(user.getRole().name())
             .build();
   }
 
