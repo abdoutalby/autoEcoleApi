@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class UserController {
+ public class UserController {
 
     private final UserService userService;
 
@@ -30,6 +30,12 @@ public class UserController {
     public ResponseEntity<?> getAll(){
         return userService.getAll();
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id){
+        return userService.delete(id);
+    }
+
 
 
 }

@@ -6,4 +6,6 @@ public interface VehiculeService {
     ResponseEntity<?> save(VehiculeDto vehicule);
     ResponseEntity<?> getByOwner(Long id);
 
+    ResponseEntity<?> delete(Long id);
+    ResponseEntity<?> update(Long id , Vehicule vehicule);
 }

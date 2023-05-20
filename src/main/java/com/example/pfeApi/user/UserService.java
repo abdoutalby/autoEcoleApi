@@ -7,4 +7,6 @@ public interface UserService {
     ResponseEntity<?> changePassword( Integer id,  String newPassword);
     ResponseEntity<?> desable(Integer id);
     ResponseEntity<?> getAll();
+
+    ResponseEntity<?> delete(Integer id);
 }

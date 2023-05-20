@@ -11,4 +11,12 @@ public interface EcoleService {
     ResponseEntity<?> removeClient(Long id , Integer clientId);
     ResponseEntity<?> getById(Long id);
     ResponseEntity<?> delete(Long id);
+
+    ResponseEntity<?> getByOwnerId(Integer id);
+
+    ResponseEntity<?> addMentor(Long id, Integer idClient);
+
+    ResponseEntity<?> removeMentor(Long id, Integer idClient);
+
+    ResponseEntity<?> getAllMentors(Long id);
 }

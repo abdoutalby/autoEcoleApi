@@ -18,4 +18,13 @@ public class VehiculeController {
     public ResponseEntity<?> save(@RequestBody VehiculeDto vehiculeDto){
         return this.vehiculeService.save(vehiculeDto);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id){
+        return this.vehiculeService.delete(id);
+    }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") Long id , @RequestBody Vehicule vehicule){
+        return this.vehiculeService.update(id,vehicule);
+    }
 }

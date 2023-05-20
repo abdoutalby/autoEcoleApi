@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImp implements UserService{
@@ -47,5 +49,15 @@ public class UserServiceImp implements UserService{
     @Override
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(userRepository.findAll());
+    }
+
+    @Override
+    public ResponseEntity<?> delete(Integer id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()){
+            userRepository.delete(user.get());
+            return API.getResponseEntity("user deleted successfully",HttpStatus.OK);
+        }
+        return API.getResponseEntity("no user matching this call",HttpStatus.OK);
     }
 }

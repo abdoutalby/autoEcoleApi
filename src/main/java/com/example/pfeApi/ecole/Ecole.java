@@ -29,6 +29,9 @@ public class Ecole {
     @OneToMany(mappedBy = "ecole")
     private List<User> clients = new ArrayList();
 
+    @OneToMany(mappedBy = "ecoleMentor")
+    private List<User> mentors = new ArrayList();
+
     @OneToMany(mappedBy = "ecole")
     @JsonIgnore
     private List<Vehicule> vehicules = new ArrayList<>();

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -38,5 +39,28 @@ public class VehiculeServiceImp implements VehiculeService{
             return ResponseEntity.ok(this.vehiculeRepository.findVehiculeByEcole(ecole.get()));
         }return API.getResponseEntity("no ecole match this call ", HttpStatus.OK);
 
+    }
+
+    @Override
+    public ResponseEntity<?> delete(Long id) {
+        Optional<Vehicule> vehicule = this.vehiculeRepository.findById(id);
+        if (vehicule.isPresent()){
+            this.vehiculeRepository.deleteById(id);
+            return API.getResponseEntity("vehicule deleted succsefully ", HttpStatus.OK);
+        }
+        return API.getResponseEntity("no vehicule match this call", HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> update(Long id, Vehicule vehicule) {
+        Optional<Vehicule> v = this.vehiculeRepository.findById(id);
+        if (v.isPresent()){
+            Vehicule up = v.get();
+            up.setEcole(vehicule.getEcole());
+            up.setType(vehicule.getType());
+            up.setMatricule(vehicule.getMatricule());
+            return ResponseEntity.ok(this.vehiculeRepository.save(up));
+        }
+        return API.getResponseEntity("no vehicule match this call",HttpStatus.OK);
     }
 }

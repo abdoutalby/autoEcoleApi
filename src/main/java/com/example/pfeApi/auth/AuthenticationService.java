@@ -1,6 +1,11 @@
 package com.example.pfeApi.auth;
 
 import com.example.pfeApi.config.JwtService;
+import com.example.pfeApi.ecole.Ecole;
+import com.example.pfeApi.ecole.EcoleDto;
+import com.example.pfeApi.ecole.EcoleRepository;
+import com.example.pfeApi.ecole.EcoleServiceImp;
+import com.example.pfeApi.files.FileService;
 import com.example.pfeApi.token.Token;
 import com.example.pfeApi.token.TokenRepository;
 import com.example.pfeApi.token.TokenType;
@@ -17,6 +22,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +35,12 @@ public class AuthenticationService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+  private final EcoleServiceImp ecoleServiceImp;
+  private final FileService fileService;
+  private final EcoleRepository ecoleRepository;
 
-  public ResponseEntity<?> register(RegisterRequest request) {
+  public ResponseEntity<?> register(RegisterRequest request , MultipartFile image) {
    if(!repository.existsByEmail(request.getEmail())){
-
 
      var user = User.builder()
              .firstname(request.getFirstname())
@@ -38,6 +48,9 @@ public class AuthenticationService {
              .email(request.getEmail())
              .password(passwordEncoder.encode(request.getPassword()))
              .enabled(request.getEnabled() ? true : false)
+             .phone(request.getPhone())
+             .adress(request.getAdress())
+             .imageUrl(fileService.save(image,UUID.randomUUID()+ request.getEmail()))
              .build();
      switch (request.getRole()){
        case "admin": {
@@ -46,18 +59,44 @@ public class AuthenticationService {
        }
        case "user": {
          user.setRole( Role.USER); ;
+
          break;
        }
        case "ecole": {
          user.setRole(Role.ECOLE) ;
          break;
        }
+       case "instructor": {
+         user.setRole(Role.INSTRUCTOR) ;
+         break;
+       }
      }
      var savedUser = repository.save(user);
-     var jwtToken = jwtService.generateToken(user);
+     log.info("save user {}", savedUser);
+     log.info("condition : {}", savedUser.getRole().equals(Role.ECOLE));
+     if (savedUser.getRole().equals(Role.ECOLE)){
+       var ecole = ecoleRepository.save(Ecole.builder()
+               .name(savedUser.getEmail())
+               .adress(savedUser.getAdress())
+               .owner(savedUser)
+               .password(request.getPassword())
+               .email(savedUser.getEmail())
+               .build());
+       log.info("ecole added {}",ecole.toString());
+     }
+
+       if (request.getEcoleId()!=null){
+      if( savedUser.getRole().name().equals(Role.USER)){
+           this.ecoleServiceImp.addClient(request.getEcoleId(), savedUser.getId());
+      }else if (savedUser.getRole().name().equals(Role.INSTRUCTOR))
+                 this.ecoleServiceImp.addMentor(request.getEcoleId(), savedUser.getId());
+       }
+
+     var jwtToken = jwtService.generateToken(user , user.getId());
      saveUserToken(savedUser, jwtToken);
      return ResponseEntity.ok().body( AuthenticationResponse.builder()
              .token(jwtToken)
+                     .user(savedUser)
              .build());
    }else {
      return API.getResponseEntity("email already exists", HttpStatus.BAD_REQUEST);
@@ -75,12 +114,12 @@ public class AuthenticationService {
     );
     var user = repository.findByEmail(request.getEmail())
             .orElseThrow();
-    var jwtToken = jwtService.generateToken(user);
+    var jwtToken = jwtService.generateToken(user, user.getId());
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
     return AuthenticationResponse.builder()
             .token(jwtToken)
-            .role(user.getRole().name())
+            .user(user)
             .build();
   }
 

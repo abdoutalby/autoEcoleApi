@@ -1,24 +1,27 @@
-package com.example.pfeApi.vehicule;
+package com.example.pfeApi.course;
 
-import com.example.pfeApi.ecole.Ecole;
+import com.example.pfeApi.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class Vehicule {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id ;
-    private String type;
-    private String matricule;
-    private String marque;
     @ManyToOne
-    private Ecole ecole;
+    private User mentor ;
+    @ManyToOne
+    private User client;
+    private Date date ;
+    private String type ;
 }
