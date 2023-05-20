@@ -1,6 +1,9 @@
 package com.example.pfeApi.auth;
 
 import com.example.pfeApi.config.JwtService;
+import com.example.pfeApi.ecole.Ecole;
+import com.example.pfeApi.ecole.EcoleServiceImp;
+import com.example.pfeApi.files.FileService;
 import com.example.pfeApi.token.Token;
 import com.example.pfeApi.token.TokenRepository;
 import com.example.pfeApi.token.TokenType;
@@ -17,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +31,11 @@ public class AuthenticationService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+  private final EcoleServiceImp ecoleServiceImp;
+  private final FileService fileService;
 
-  public ResponseEntity<?> register(RegisterRequest request) {
+  public ResponseEntity<?> register(RegisterRequest request , MultipartFile image) {
    if(!repository.existsByEmail(request.getEmail())){
-
 
      var user = User.builder()
              .firstname(request.getFirstname())
@@ -38,6 +43,8 @@ public class AuthenticationService {
              .email(request.getEmail())
              .password(passwordEncoder.encode(request.getPassword()))
              .enabled(request.getEnabled() ? true : false)
+             .phone(request.getPhone())
+             .imageUrl(fileService.save(image,request.getEmail()))
              .build();
      switch (request.getRole()){
        case "admin": {
@@ -54,10 +61,14 @@ public class AuthenticationService {
        }
      }
      var savedUser = repository.save(user);
-     var jwtToken = jwtService.generateToken(user);
+       if (request.getEcoleId()!=null){
+           this.ecoleServiceImp.addClient(request.getEcoleId(), savedUser.getId());
+       }
+     var jwtToken = jwtService.generateToken(user , user.getId());
      saveUserToken(savedUser, jwtToken);
      return ResponseEntity.ok().body( AuthenticationResponse.builder()
              .token(jwtToken)
+                     .user(savedUser)
              .build());
    }else {
      return API.getResponseEntity("email already exists", HttpStatus.BAD_REQUEST);
@@ -75,12 +86,12 @@ public class AuthenticationService {
     );
     var user = repository.findByEmail(request.getEmail())
             .orElseThrow();
-    var jwtToken = jwtService.generateToken(user);
+    var jwtToken = jwtService.generateToken(user, user.getId());
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
     return AuthenticationResponse.builder()
             .token(jwtToken)
-            .role(user.getRole().name())
+            .user(user)
             .build();
   }
 

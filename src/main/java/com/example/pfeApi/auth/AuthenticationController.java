@@ -2,10 +2,8 @@ package com.example.pfeApi.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -16,9 +14,10 @@ public class AuthenticationController {
 
   @PostMapping("/register")
   public ResponseEntity<?> register(
-      @RequestBody RegisterRequest request
+      @ModelAttribute RegisterRequest request,
+      @RequestParam("image") MultipartFile image
   ) {
-    return  service.register(request);
+    return  service.register(request , image);
   }
   @PostMapping("/login")
   public ResponseEntity<?> authenticate(

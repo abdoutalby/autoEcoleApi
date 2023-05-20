@@ -32,6 +32,8 @@ public class User implements UserDetails {
   @Column(unique = true)
   private String email;
   private String password;
+  private String phone ;
+  private String imageUrl;
   private Boolean enabled=false;
   @OneToOne(mappedBy = "owner")
   @JsonIgnore
@@ -40,6 +42,12 @@ public class User implements UserDetails {
   @ManyToOne
   @JsonIgnore
   private Ecole ecole;
+
+  @ManyToOne
+  @JsonIgnore
+  private Ecole ecoleMentor;
+
+
 
   @Enumerated(EnumType.STRING)
   private Role role;

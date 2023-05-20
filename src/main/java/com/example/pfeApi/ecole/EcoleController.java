@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/ecole")
 public class EcoleController {
     private final EcoleServiceImp ecoleService;
-
-
     @GetMapping("/getAll")
     public ResponseEntity<?> getAll(){
         return ecoleService.getAll();
+    }
+
+    @GetMapping("/getByOwnerId/{id}")
+    public ResponseEntity<?> getByOwnerId(@PathVariable("id") Integer id){
+        return  ecoleService.getByOwnerId(id);
     }
 
     @GetMapping("/getById/{id}")
@@ -43,4 +46,19 @@ public class EcoleController {
     public ResponseEntity<?> getAllClients(@PathVariable("id") Long id ){
         return ecoleService.getAllClients(id);
     }
+
+    @PostMapping("/addMentor/{id}/{idMentor}")
+    public ResponseEntity<?> addMentor(@PathVariable("id") Long id , @PathVariable("idMentor")Integer idClient){
+        return this.ecoleService.addMentor(id,idClient);
+    }
+    @PostMapping("/removeMentor/{id}/{idMentor}")
+    public ResponseEntity<?> remoteMentor(@PathVariable("id") Long id , @PathVariable("idMentor")Integer idClient){
+        return this.ecoleService.removeMentor(id,idClient);
+    }
+    @GetMapping("/getAllMentors/{id}")
+    public ResponseEntity<?> getMentors(@PathVariable("id") Long id ){
+        return ecoleService.getAllMentors(id);
+    }
+
+
 }
