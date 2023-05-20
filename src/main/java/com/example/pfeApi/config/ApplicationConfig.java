@@ -25,7 +25,7 @@ import java.util.Arrays;
 public class ApplicationConfig {
 
   private final UserRepository repository;
-  private final EcoleRepository ecoleRepository;
+
 
   @Bean
   public UserDetailsService userDetailsService() {

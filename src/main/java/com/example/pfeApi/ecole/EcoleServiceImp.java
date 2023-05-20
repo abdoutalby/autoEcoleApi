@@ -129,10 +129,14 @@ public class EcoleServiceImp implements EcoleService{
     @Override
     public ResponseEntity<?> getByOwnerId(Integer id) {
         Optional<User> owner = this.userRepository.findById(id);
-        if (owner.isPresent()){
-            return ResponseEntity.ok( this.ecoleRepository.findEcoleByOwner(owner.get()));
-        }else{
-            return  API.getResponseEntity("no owner match this call", HttpStatus.BAD_REQUEST);
+        if (owner.isPresent()) {
+            if (owner.get().getRole().equals(Role.ECOLE)) {
+                return ResponseEntity.ok(this.ecoleRepository.findEcoleByOwner(owner.get()));
+            } else {
+               return API.getResponseEntity("there is no owner matching this call", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return API.getResponseEntity("no owner match this call", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -140,23 +144,33 @@ public class EcoleServiceImp implements EcoleService{
     public ResponseEntity<?> addMentor(Long id, Integer idClient) {
         Optional<User> client =this.userRepository.findById(idClient);
         if (client.isPresent()){
-            Optional<Ecole> e =  this.ecoleRepository.findById(id);
-            if (e.isPresent()){
-                User u = client.get();
-                Ecole ecole = e.get();
-                u.setEcoleMentor(ecole);
-                this.userRepository.save(u);
-                ecole.getMentors().add(u);
-                this.ecoleRepository.save(ecole);
+            if (client.get().getRole().name().equals(Role.INSTRUCTOR)){
+                Optional<Ecole> e =  this.ecoleRepository.findById(id);
+                if (e.isPresent()){
+                    User u = client.get();
+                    Ecole ecole = e.get();
+                    u.setEcoleMentor(ecole);
+                    this.userRepository.save(u);
+                    ecole.getMentors().add(u);
+                    this.ecoleRepository.save(ecole);
+                    return API.getResponseEntity(
+                            "mentor "+client.get().getEmail()+" added to ecole "+ecole.getName(),
+                            HttpStatus.OK);
+                }else {
+                    return API.getResponseEntity(
+                            "no ecole matching this request",
+                            HttpStatus.OK);
+                }
+            }
+            else {
                 return API.getResponseEntity(
-                        "mentor "+client.get().getEmail()+" added to ecole "+ecole.getName(),
-                        HttpStatus.OK);
-            }else {
-                return API.getResponseEntity(
-                        "no ecole matching this request",
+                        "this client is not a mentor",
                         HttpStatus.OK);
             }
-        }else {
+
+        }
+
+        else {
             return API.getResponseEntity(
                     "no mentor matching this request",
                     HttpStatus.OK);

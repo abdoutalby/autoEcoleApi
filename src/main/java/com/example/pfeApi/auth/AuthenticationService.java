@@ -2,6 +2,8 @@ package com.example.pfeApi.auth;
 
 import com.example.pfeApi.config.JwtService;
 import com.example.pfeApi.ecole.Ecole;
+import com.example.pfeApi.ecole.EcoleDto;
+import com.example.pfeApi.ecole.EcoleRepository;
 import com.example.pfeApi.ecole.EcoleServiceImp;
 import com.example.pfeApi.files.FileService;
 import com.example.pfeApi.token.Token;
@@ -22,6 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -33,6 +37,7 @@ public class AuthenticationService {
   private final AuthenticationManager authenticationManager;
   private final EcoleServiceImp ecoleServiceImp;
   private final FileService fileService;
+  private final EcoleRepository ecoleRepository;
 
   public ResponseEntity<?> register(RegisterRequest request , MultipartFile image) {
    if(!repository.existsByEmail(request.getEmail())){
@@ -44,7 +49,8 @@ public class AuthenticationService {
              .password(passwordEncoder.encode(request.getPassword()))
              .enabled(request.getEnabled() ? true : false)
              .phone(request.getPhone())
-             .imageUrl(fileService.save(image,request.getEmail()))
+             .adress(request.getAdress())
+             .imageUrl(fileService.save(image,UUID.randomUUID()+ request.getEmail()))
              .build();
      switch (request.getRole()){
        case "admin": {
@@ -53,17 +59,39 @@ public class AuthenticationService {
        }
        case "user": {
          user.setRole( Role.USER); ;
+
          break;
        }
        case "ecole": {
          user.setRole(Role.ECOLE) ;
          break;
        }
+       case "instructor": {
+         user.setRole(Role.INSTRUCTOR) ;
+         break;
+       }
      }
      var savedUser = repository.save(user);
+     log.info("save user {}", savedUser);
+     log.info("condition : {}", savedUser.getRole().equals(Role.ECOLE));
+     if (savedUser.getRole().equals(Role.ECOLE)){
+       var ecole = ecoleRepository.save(Ecole.builder()
+               .name(savedUser.getEmail())
+               .adress(savedUser.getAdress())
+               .owner(savedUser)
+               .password(request.getPassword())
+               .email(savedUser.getEmail())
+               .build());
+       log.info("ecole added {}",ecole.toString());
+     }
+
        if (request.getEcoleId()!=null){
+      if( savedUser.getRole().name().equals(Role.USER)){
            this.ecoleServiceImp.addClient(request.getEcoleId(), savedUser.getId());
+      }else if (savedUser.getRole().name().equals(Role.INSTRUCTOR))
+                 this.ecoleServiceImp.addMentor(request.getEcoleId(), savedUser.getId());
        }
+
      var jwtToken = jwtService.generateToken(user , user.getId());
      saveUserToken(savedUser, jwtToken);
      return ResponseEntity.ok().body( AuthenticationResponse.builder()

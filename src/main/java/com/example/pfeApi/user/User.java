@@ -25,7 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class User implements UserDetails {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
   private String firstname;
   private String lastname;
@@ -33,6 +33,7 @@ public class User implements UserDetails {
   private String email;
   private String password;
   private String phone ;
+  private String adress ;
   private String imageUrl;
   private Boolean enabled=false;
   @OneToOne(mappedBy = "owner")

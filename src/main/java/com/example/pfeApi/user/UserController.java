@@ -31,6 +31,10 @@ import org.springframework.web.bind.annotation.*;
         return userService.getAll();
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id){
+        return userService.delete(id);
+    }
 
 
 
