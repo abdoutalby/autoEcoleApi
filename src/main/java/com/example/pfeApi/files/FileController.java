@@ -25,4 +25,8 @@ public class FileController {
     public ResponseEntity<Resource> loadFile(@PathVariable("filename") String filename) throws IOException {
         return fileService.load(filename);
     }
+    @RequestMapping(value = "/loadVehicule/{filename}" , method = RequestMethod.GET)
+    public ResponseEntity<Resource> VehiculeLoad(@PathVariable("filename") String filename) throws IOException {
+        return fileService.VehiculeLoad(filename);
+    }
 }

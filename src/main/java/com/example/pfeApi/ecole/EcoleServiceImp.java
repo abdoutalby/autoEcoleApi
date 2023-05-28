@@ -52,7 +52,7 @@ public class EcoleServiceImp implements EcoleService{
     @Override
     public ResponseEntity<?> addClient(Long id, Integer clientId) {
        Optional<User> client =this.userRepository.findById(clientId);
-       if (client.isPresent()&&client.get().getRole().name().equals(Role.USER)){
+       if (client.isPresent()&&client.get().getRole().equals(Role.USER)){
            Optional<Ecole> e =  this.ecoleRepository.findById(id);
            if (e.isPresent()){
                User u = client.get();
@@ -144,7 +144,7 @@ public class EcoleServiceImp implements EcoleService{
     public ResponseEntity<?> addMentor(Long id, Integer idClient) {
         Optional<User> client =this.userRepository.findById(idClient);
         if (client.isPresent()){
-            if (client.get().getRole().name().equals(Role.INSTRUCTOR)){
+            if (client.get().getRole().equals(Role.INSTRUCTOR)){
                 Optional<Ecole> e =  this.ecoleRepository.findById(id);
                 if (e.isPresent()){
                     User u = client.get();

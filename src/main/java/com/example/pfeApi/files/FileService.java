@@ -17,7 +17,8 @@ import java.nio.file.Paths;
 @Service
 public class FileService {
 
-    private final Path root = Paths.get("files/");
+    private final Path root = Paths.get("images/");
+    private final Path VehiculesRoot = Paths.get("images/vehicules/");
 
 
 
@@ -30,7 +31,14 @@ public class FileService {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
         }
     }
-
+    public String saveVehicule(MultipartFile file , String username) {
+        try {
+            Files.copy(file.getInputStream(), this.VehiculesRoot.resolve(username+file.getOriginalFilename()));
+            return username+file.getOriginalFilename() ;
+        } catch (Exception e) {
+            throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
+        }
+    }
 
     public ResponseEntity<Resource> load(String filename) throws IOException{
         Path filePath = root.toAbsolutePath().normalize().resolve(filename) ;
@@ -40,5 +48,18 @@ public class FileService {
         httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION , "attachment;File-Name" + resource.getFilename());
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
                 .headers(httpHeaders).body(resource);
+    }
+    public ResponseEntity<Resource> VehiculeLoad(String filename) throws IOException{
+        Path filePath = VehiculesRoot.toAbsolutePath().normalize().resolve(filename) ;
+        Resource resource = new UrlResource(filePath.toUri()) ;
+        HttpHeaders httpHeaders = new HttpHeaders() ;
+        httpHeaders.add("File-Name" , filename);
+        httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION , "attachment;File-Name" + resource.getFilename());
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
+                .headers(httpHeaders).body(resource);
+    }
+    public void deleteFile(String filename) throws IOException{
+        Path filePath = root.toAbsolutePath().normalize().resolve(filename) ;
+        Files.deleteIfExists(filePath.toAbsolutePath());
     }
 }

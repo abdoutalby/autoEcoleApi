@@ -3,6 +3,7 @@ package com.example.pfeApi.vehicule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/vehicule")
@@ -15,8 +16,10 @@ public class VehiculeController {
         return this.vehiculeService.getByOwner(id);
     }
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody VehiculeDto vehiculeDto){
-        return this.vehiculeService.save(vehiculeDto);
+    public ResponseEntity<?> save(
+            @RequestParam("image") MultipartFile image,
+            @ModelAttribute VehiculeDto vehiculeDto){
+        return this.vehiculeService.save(vehiculeDto , image);
     }
 
     @DeleteMapping("/delete/{id}")

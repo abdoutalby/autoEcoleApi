@@ -7,5 +7,6 @@ public class VehiculeDto {
     private String type;
     private String matricule;
     private String marque;
+    private String  modele;
     private Long ecoleId;
 }

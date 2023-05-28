@@ -40,40 +40,37 @@ public class AuthenticationService {
   private final EcoleRepository ecoleRepository;
 
   public ResponseEntity<?> register(RegisterRequest request , MultipartFile image) {
+    var ecoleId ="";
    if(!repository.existsByEmail(request.getEmail())){
-
-     var user = User.builder()
+      log.info("user request ecole id {}",request.getEcoleId());
+      ecoleId = request.getEcoleId();
+      var user = User.builder()
              .firstname(request.getFirstname())
              .lastname(request.getLastname())
              .email(request.getEmail())
              .password(passwordEncoder.encode(request.getPassword()))
-             .enabled(request.getEnabled() ? true : false)
+             .enabled(request.getEnabled())
              .phone(request.getPhone())
              .adress(request.getAdress())
              .imageUrl(fileService.save(image,UUID.randomUUID()+ request.getEmail()))
              .build();
-     switch (request.getRole()){
-       case "admin": {
-         user.setRole(Role.ADMIN) ;
-         break;
+     switch (request.getRole()) {
+       case "admin" -> {
+         user.setRole(Role.ADMIN);
        }
-       case "user": {
-         user.setRole( Role.USER); ;
-
-         break;
+       case "user" -> {
+         user.setRole(Role.USER);
+         ;
        }
-       case "ecole": {
-         user.setRole(Role.ECOLE) ;
-         break;
+       case "ecole" -> {
+         user.setRole(Role.ECOLE);
        }
-       case "instructor": {
-         user.setRole(Role.INSTRUCTOR) ;
-         break;
+       case "instructor" -> {
+         user.setRole(Role.INSTRUCTOR);
        }
      }
      var savedUser = repository.save(user);
      log.info("save user {}", savedUser);
-     log.info("condition : {}", savedUser.getRole().equals(Role.ECOLE));
      if (savedUser.getRole().equals(Role.ECOLE)){
        var ecole = ecoleRepository.save(Ecole.builder()
                .name(savedUser.getEmail())
@@ -84,15 +81,17 @@ public class AuthenticationService {
                .build());
        log.info("ecole added {}",ecole.toString());
      }
-
-       if (request.getEcoleId()!=null){
-      if( savedUser.getRole().name().equals(Role.USER)){
-           this.ecoleServiceImp.addClient(request.getEcoleId(), savedUser.getId());
-      }else if (savedUser.getRole().name().equals(Role.INSTRUCTOR))
-                 this.ecoleServiceImp.addMentor(request.getEcoleId(), savedUser.getId());
+    else if ((savedUser.getRole().equals(Role.USER)
+             ||
+             savedUser.getRole().equals(Role.INSTRUCTOR)) &&request.getEcoleId() != null ) {
+         log.info("ecole id : {}", ecoleId);
+         log.info("ecole : {}",savedUser.getRole().equals(Role.USER)  );
+         if (savedUser.getRole().equals(Role.USER)) {
+           this.ecoleServiceImp.addClient(Long.valueOf(ecoleId), savedUser.getId());
+         } else if (savedUser.getRole().equals(Role.INSTRUCTOR))
+           this.ecoleServiceImp.addMentor(Long.valueOf(ecoleId), savedUser.getId());
        }
-
-     var jwtToken = jwtService.generateToken(user , user.getId());
+     var jwtToken = jwtService.generateToken(savedUser , user.getId());
      saveUserToken(savedUser, jwtToken);
      return ResponseEntity.ok().body( AuthenticationResponse.builder()
              .token(jwtToken)
