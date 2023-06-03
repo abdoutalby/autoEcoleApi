@@ -7,6 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.sql.Date;
 
 @Entity
 @Builder
@@ -22,4 +26,8 @@ public class Payment {
     private User client;
     @ManyToOne
     private Ecole ecole;
+    @UpdateTimestamp
+    private Date updatedAt;
+    @CreatedDate
+    private Date createdAt;
 }

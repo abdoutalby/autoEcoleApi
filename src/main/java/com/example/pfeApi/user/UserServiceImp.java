@@ -64,4 +64,13 @@ public class UserServiceImp implements UserService{
         }
         return API.getResponseEntity("no user matching this call",HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<?> findByEmail(String email) {
+        Optional<User> user = this.userRepository.findByEmail(email);
+        if (user.isPresent()){
+            return  ResponseEntity.ok(user.get());
+        }
+        return ResponseEntity.badRequest().body("no user match this email");
+    }
 }

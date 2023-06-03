@@ -6,6 +6,7 @@ import com.example.pfeApi.user.User;
 import com.example.pfeApi.user.UserRepository;
 import com.example.pfeApi.utils.API;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentServiceImp implements PaymentService{
     private final PaymentRepository paymentRepository;
     private final EcoleRepository ecoleRepository;

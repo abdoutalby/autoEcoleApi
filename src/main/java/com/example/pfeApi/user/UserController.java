@@ -38,6 +38,10 @@ import java.io.IOException;
         return userService.delete(id);
     }
 
+    @GetMapping("/findByEmail/{email}")
+    public  ResponseEntity<?> findByEmail(@PathVariable("email") String email){
+        return  this.userService.findByEmail(email);
+    }
 
 
 }

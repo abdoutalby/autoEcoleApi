@@ -103,25 +103,43 @@ public class AuthenticationService {
 
   }
 
-  public AuthenticationResponse authenticate(AuthenticationRequest request) {
-    log.info("login request {}", request);
+  public ResponseEntity<?> authenticate(AuthenticationRequest request) {
+      var user = repository.findByEmail(request.getEmail())
+              .orElseThrow();
+      if (user.isEnabled() ){
+          if (user.isAccountNonExpired()){
     authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                     request.getEmail(),
                     request.getPassword()
             )
     );
-    var user = repository.findByEmail(request.getEmail())
-            .orElseThrow();
+
     var jwtToken = jwtService.generateToken(user, user.getId());
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
-    return AuthenticationResponse.builder()
+    return ResponseEntity.ok( AuthenticationResponse.builder()
             .token(jwtToken)
             .user(user)
-            .build();
+            .ecoleId(user.getRole().equals(Role.ADMIN)?
+                            null
+                            :
+                            user.getRole().equals(Role.ECOLE)
+                                    ?
+                    ecoleRepository.findEcoleByOwner(user).getId()
+                                    :
+                    user.getRole().equals(Role.INSTRUCTOR)
+                            ?user.getEcoleMentor().getId()
+                            :
+                    user.getEcole().getId()
+                    )
+            .build());
+  }else {
+          return ResponseEntity.badRequest().body("Account is  expired");
+      }}else{
+          return ResponseEntity.badRequest().body("Account is  not active yet ");
+      }
   }
-
 
   private void saveUserToken(User user, String jwtToken) {
     var token = Token.builder()
