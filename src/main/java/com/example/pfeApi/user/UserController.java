@@ -43,5 +43,17 @@ import java.io.IOException;
         return  this.userService.findByEmail(email);
     }
 
+    @GetMapping("/getAllActiveEcoles/")
+    public ResponseEntity<?> getAllActiveEcole(){
+        return this.userService.getAllActiveEcole();
+    }
+        @GetMapping("/getAllInactiveEcoles/")
+        public ResponseEntity<?> getAllInactiveEcole(){
+        return this.userService.getAllInactiveEcole();
+        }
+        @GetMapping("/getAllEnabledUser/")
+        public ResponseEntity<?> getAllEcoles(){
+        return this.userService.getAllEcoles();
+        }
 
 }

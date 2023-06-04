@@ -4,7 +4,7 @@ services:
     build: .
     restart: always
     volumes:
-      - ./files:/files
+      - ./images:/images
     stdin_open: true
     tty: true
     ports:

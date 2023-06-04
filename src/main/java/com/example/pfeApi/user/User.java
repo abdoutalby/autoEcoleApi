@@ -48,8 +48,6 @@ public class User implements UserDetails {
   @JsonIgnore
   private Ecole ecoleMentor;
 
-
-
   @Enumerated(EnumType.STRING)
   private Role role;
 

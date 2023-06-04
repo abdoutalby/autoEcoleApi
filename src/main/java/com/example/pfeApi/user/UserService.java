@@ -13,4 +13,10 @@ public interface UserService {
     ResponseEntity<?> delete(Integer id) throws IOException;
 
     ResponseEntity<?> findByEmail(String email);
+
+    ResponseEntity<?> getAllActiveEcole();
+
+    ResponseEntity<?> getAllInactiveEcole();
+
+    ResponseEntity<?> getAllEcoles();
 }

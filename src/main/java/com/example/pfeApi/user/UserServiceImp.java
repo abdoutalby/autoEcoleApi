@@ -73,4 +73,19 @@ public class UserServiceImp implements UserService{
         }
         return ResponseEntity.badRequest().body("no user match this email");
     }
+
+    @Override
+    public ResponseEntity<?> getAllActiveEcole() {
+        return ResponseEntity.ok(this.userRepository.findAllByRoleAndEnabled(Role.ECOLE, true));
+    }
+
+    @Override
+    public ResponseEntity<?> getAllInactiveEcole() {
+        return ResponseEntity.ok(this.userRepository.findAllByRoleAndEnabled(Role.ECOLE, false));
+    }
+
+    @Override
+    public ResponseEntity<?> getAllEcoles() {
+        return  ResponseEntity.ok(this.userRepository.findAllByRole(Role.ECOLE));
+    }
 }
