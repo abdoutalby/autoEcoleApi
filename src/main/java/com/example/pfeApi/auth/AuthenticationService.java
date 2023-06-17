@@ -42,7 +42,6 @@ public class AuthenticationService {
   public ResponseEntity<?> register(RegisterRequest request , MultipartFile image) {
     var ecoleId ="";
    if(!repository.existsByEmail(request.getEmail())){
-      log.info("user request ecole id {}",request.getEcoleId());
       ecoleId = request.getEcoleId();
       var user = User.builder()
              .firstname(request.getFirstname())
@@ -70,7 +69,6 @@ public class AuthenticationService {
        }
      }
      var savedUser = repository.save(user);
-     log.info("save user {}", savedUser);
      if (savedUser.getRole().equals(Role.ECOLE)){
        var ecole = ecoleRepository.save(Ecole.builder()
                .name(savedUser.getEmail())
@@ -79,7 +77,6 @@ public class AuthenticationService {
                .password(request.getPassword())
                .email(savedUser.getEmail())
                .build());
-       log.info("ecole added {}",ecole.toString());
      }
     else if ((savedUser.getRole().equals(Role.USER)
              ||
