@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
+import java.time.OffsetDateTime;
 
 @Entity
 @Builder
@@ -22,6 +22,6 @@ public class Course {
     private User mentor ;
     @ManyToOne
     private User client;
-    private Date date ;
+    private OffsetDateTime date ;
     private String type ;
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Optional;
 
@@ -21,19 +22,36 @@ public class CourseServiceimp implements CourseService{
     public ResponseEntity<?> save(CourseDto dto) {
         Optional<User> client = userRepository.findById(dto.getClient());
         if (client.isPresent()){
-            Optional<User> mentor = userRepository.findById(dto.getMentor());
-            if (mentor.isPresent()){
+            if(dto.getType()=="conduit"){
+                var mentor = userRepository.findById(dto.getMentor());
+                if (mentor.isPresent()){
+                    OffsetDateTime date = OffsetDateTime.parse(dto.getDate());
+                    System.out.println(date.toString());
+                    var course = Course.builder()
+                            .client(client.get())
+                            .mentor(mentor.get())
+                            .date(date)
+                            .type(dto.getType())
+                            .build();
+                    courseRepository.save(course);
+                    return API.getResponseEntity("course save successfully",HttpStatus.OK);
+                }else {
+                    return API.getResponseEntity("no mentor matching this call", HttpStatus.BAD_REQUEST);
+                }
+            }else {
+                OffsetDateTime date = OffsetDateTime.parse(dto.getDate());
+                System.out.println(date.toString());
                 var course = Course.builder()
                         .client(client.get())
-                        .mentor(mentor.get())
-                        .date(dto.getDate())
+                        .mentor(null)
+                        .date(date)
                         .type(dto.getType())
                         .build();
                 courseRepository.save(course);
                 return API.getResponseEntity("course save successfully",HttpStatus.OK);
-            }else {
-                return API.getResponseEntity("no mentor matching this call", HttpStatus.BAD_REQUEST);
+
             }
+
         }else {
             return API.getResponseEntity("no client matching this call", HttpStatus.BAD_REQUEST);
         }

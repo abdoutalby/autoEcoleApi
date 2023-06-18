@@ -9,6 +9,4 @@ public class PfeApiApplication   {
 		SpringApplication.run(PfeApiApplication.class, args);
 	}
 
-
-
 }

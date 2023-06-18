@@ -12,6 +12,7 @@ public class CourseController {
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody CourseDto dto){
+        System.out.println(dto.getDate());
         return this.courseService.save(dto);
     }
     @GetMapping("/all")

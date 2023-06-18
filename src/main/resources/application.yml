@@ -3,9 +3,11 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-
+  mvc:
+    format:
+      date-time: iso
   datasource:
-    url: jdbc:mysql://databaseServer:3306/api?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/api?createDatabaseIfNotExist=true
     driverClassName: com.mysql.cj.jdbc.Driver
     password: Super@3abdou
     username: root
